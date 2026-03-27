@@ -1,0 +1,85 @@
+[project]
+name = "python-decorator-tutorial"
+version = "0.1.0"
+description = "Pythonデコレータを段階的に学べるチュートリアルプロジェクト"
+authors = [
+    { name = "Nasu Susumu", email = "nasu@eggplant.org.uk" }
+]
+requires-python = ">=3.14.3"
+dependencies = []
+
+[tool.uv.build-backend]
+module-name = "decorator_tutorial"
+
+[build-system]
+requires = ["uv_build>=0.10.7,<0.11.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mypy>=1.15.0",
+    "pytest>=8.3.0",
+    "pytest-cov>=6.0.0",
+    "ruff>=0.11.0",
+]
+
+# ---------------------------------------------------------------------------
+# ruff
+# ---------------------------------------------------------------------------
+[tool.ruff]
+target-version = "py314"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "W", "F", "I", "UP", "ANN", "D"]
+ignore = [
+    "D100",  # モジュール docstring（チュートリアルでは別途コメントで説明）
+    "D104",  # パッケージ docstring
+    "D415",  # 日本語句点「。」はD415ルールで認識されないため除外
+    "UP047",  # ParamSpec/TypeVar を明示的に使うチュートリアルのため新構文への変換を除外
+    "ANN401", # Any の使用を一部許可（基礎ファイルで必要）
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+
+# ---------------------------------------------------------------------------
+# mypy
+# ---------------------------------------------------------------------------
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+
+# 01〜04: 基本型のみ・Callable 導入段階 → 型アノテーション緩和
+[[tool.mypy.overrides]]
+module = [
+    "decorator_tutorial.01_problem_without_decorator",
+    "decorator_tutorial.02_basic_decorator",
+    "decorator_tutorial.03_decorator_with_args",
+    "decorator_tutorial.04_functools_wraps",
+]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+warn_return_any = false
+disallow_any_generics = false
+
+# 05〜06: 組み込みデコレータ・クラスベース → 中間設定
+[[tool.mypy.overrides]]
+module = [
+    "decorator_tutorial.05_builtin_decorators",
+    "decorator_tutorial.06_class_decorator",
+]
+disallow_untyped_defs = true
+warn_return_any = false
+
+# ---------------------------------------------------------------------------
+# pytest
+# ---------------------------------------------------------------------------
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --cov=decorator_tutorial --cov-report=term-missing"
